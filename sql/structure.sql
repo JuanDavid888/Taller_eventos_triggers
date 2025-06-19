@@ -1,4 +1,4 @@
--- Active: 1749726759608@@127.0.0.1@3307@pizzeria
+-- Active: 1750359843386@@127.0.0.1@3307@pizzeria
 
 CREATE DATABASE pizzeria DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 
@@ -24,6 +24,8 @@ DROP TABLE IF EXISTS detalle_pedido;
 
 DROP TABLE IF EXISTS auditoria_precios;
 
+DROP TABLE IF EXISTS alerta_stock;
+
 DROP TABLE IF EXISTS cliente;
 
 DROP TABLE IF EXISTS pedido;
@@ -39,6 +41,8 @@ DROP TABLE IF EXISTS tipo_producto;
 DROP TABLE IF EXISTS ingrediente;
 
 DROP TABLE IF EXISTS presentacion;
+
+DROP TABLE IF EXISTS resumen_ventas;
 
 -- Crear tablas
 
@@ -156,7 +160,16 @@ CREATE TABLE `resumen_ventas` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
     `fecha` DATE NOT NULL,
     `total_pedidos` INT NOT NULL,
+    `total_ingresos` INT NOT NULL,
     INDEX (fecha)
+);
+
+CREATE TABLE `alerta_stock` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `ingrediente_id` INT NOT NULL,
+    `stock_actual` INT NOT NULL,
+    `fecha_alerta` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    INDEX (ingrediente_id)
 );
 
 -- Foraneas de las tablas
@@ -208,3 +221,6 @@ FOREIGN KEY (`producto_id`) REFERENCES `producto`(`id`);
 ALTER TABLE 
     `auditoria_precios` ADD CONSTRAINT `auditoria_precios_presentacion_id`
 FOREIGN KEY (`presentacion_id`) REFERENCES `presentacion`(`id`);
+
+ALTER TABLE
+    `alerta_stock` ADD CONSTRAINT `alerta_stock_ingrediente_id` FOREIGN KEY(`ingrediente_id`) REFERENCES `ingrediente`(`id`);
