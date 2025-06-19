@@ -79,3 +79,22 @@ BEGIN
 END $$
 
 DELIMITER ;
+
+-- 4
+DELIMITER $$
+
+DROP EVENT IF EXISTS ev_monitor_stock_bajo $$
+
+CREATE EVENT ev_monitor_stock_bajo
+ON SCHEDULE EVERY 30 MINUTE
+DO
+BEGIN
+
+    INSERT INTO alerta_stock (ingrediente_id, nombre, stock_actual, fecha_alerta)
+    SELECT id, nombre, stock, NOW()
+    FROM ingrediente
+    WHERE stock < 10;
+    
+END $$
+
+DELIMITER ;
