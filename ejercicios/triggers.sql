@@ -1,0 +1,3 @@
+-- Active: 1750359843386@@127.0.0.1@3307@pizzeria
+
+SHOW TRIGGERS;
