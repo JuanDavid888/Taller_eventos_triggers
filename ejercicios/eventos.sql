@@ -98,3 +98,20 @@ BEGIN
 END $$
 
 DELIMITER ;
+
+-- 5
+DELIMITER $$
+
+DROP EVENT IF EXISTS ev_purgar_resumen_antiguo $$
+
+CREATE EVENT ev_purgar_resumen_antiguo
+ON SCHEDULE AT CURRENT_TIMESTAMP
+DO
+BEGIN
+
+    DELETE FROM resumen_ventas
+    WHERE fecha < CURDATE() - INTERVAL 365 DAY;
+    
+END $$
+
+DELIMITER ;
