@@ -60,3 +60,22 @@ BEGIN
 END $$
 
 DELIMITER ;
+
+-- 3
+DELIMITER $$
+
+DROP EVENT IF EXISTS ev_alerta_stock_unica $$
+
+CREATE EVENT ev_alerta_stock_unica
+ON SCHEDULE AT CURRENT_TIMESTAMP + INTERVAL 5 MINUTE
+DO
+BEGIN
+
+    INSERT INTO alerta_stock (ingrediente_id, nombre, stock_actual, fecha_alerta)
+    SELECT id, nombre, stock, NOW()
+    FROM ingrediente
+    WHERE stock < 5;
+    
+END $$
+
+DELIMITER ;
