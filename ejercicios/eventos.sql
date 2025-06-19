@@ -30,3 +30,33 @@ BEGIN
 END $$
 
 DELIMITER ;
+
+-- 2
+DELIMITER $$
+
+DROP EVENT IF EXISTS ev_resumen_semanal $$
+
+CREATE EVENT ev_resumen_semanal
+ON SCHEDULE EVERY 1 WEEK
+STARTS DATE_ADD(CURRENT_DATE, INTERVAL (7 - WEEKDAY(CURRENT_DATE)) DAY)
+DO
+BEGIN
+    DECLARE p_pedidos INT;
+    DECLARE p_ingresos INT;
+
+    SET p_pedidos = (
+        SELECT COUNT(*) AS pedidos FROM pedido
+        WHERE fecha_recogida BETWEEN CONCAT(CURDATE(), ' 00:00:00')AND CONCAT(CURDATE(), ' 23:59:59')
+        );
+
+    SET p_pedidos = (
+        SELECT SUM(total) AS total FROM pedido
+        WHERE fecha_recogida BETWEEN CONCAT(CURDATE(), ' 00:00:00')AND CONCAT(CURDATE(), ' 23:59:59')
+        );
+
+    INSERT INTO resumen_ventas (fecha, total_pedidos, total_ingresos)
+    VALUES(NOW(), p_pedidos, p_ingresos);
+
+END $$
+
+DELIMITER ;
