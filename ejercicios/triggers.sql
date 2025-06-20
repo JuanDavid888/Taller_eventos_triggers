@@ -68,3 +68,25 @@ INSERT INTO ingrediente_extra(cantidad, detalle_pedido_id, ingrediente_id)
 VALUES(10, 1, 1);
 
 SELECT * FROM ingrediente;
+
+-- 3
+DELIMITER $$
+
+DROP TRIGGER IF EXISTS tg_registro_actualizacion_precios $$
+
+CREATE TRIGGER tg_registro_actualizacion_precios
+AFTER UPDATE ON producto_presentacion
+FOR EACH ROW
+BEGIN
+    DECLARE p_precio_anterior DECIMAL(10,2);
+
+    INSERT INTO auditoria_precios(producto_id, presentacion_id, precio_anterior, precio_nuevo, fecha_cambio)
+    VALUES(NEW.producto_id, NEW.presentacion_id, OLD.precio, NEW.precio, NOW());
+
+END $$
+
+DELIMITER ;
+
+UPDATE producto_presentacion SET precio = 25000 WHERE id = 4;
+
+SELECT * FROM auditoria_precios;
