@@ -90,3 +90,24 @@ DELIMITER ;
 UPDATE producto_presentacion SET precio = 25000 WHERE id = 4;
 
 SELECT * FROM auditoria_precios;
+
+-- 4
+DELIMITER $$
+
+DROP TRIGGER IF EXISTS tg_impedir_ciertos_precios $$
+
+CREATE TRIGGER tg_impedir_ciertos_precios
+BEFORE UPDATE ON producto_presentacion
+FOR EACH ROW
+BEGIN
+
+    IF NEW.precio < 1 THEN
+        SIGNAL SQLSTATE '40001'
+            SET MESSAGE_TEXT = 'El precio debe ser mayor a 0';
+    END IF;
+
+END $$
+
+DELIMITER ;
+
+UPDATE producto_presentacion SET precio = 0 WHERE id = 1;
