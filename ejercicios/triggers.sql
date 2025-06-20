@@ -136,6 +136,27 @@ END $$
 DELIMITER ;
 
 INSERT INTO pedido (fecha_recogida, total, cliente_id, metodo_pago_id, estado)
-VALUES('2025-03-11 06:00:00', 50000, 2, 1, 'Cancelado');
+VALUES('2025-03-11 06:00:00', 50000, 2, 1, 'Pendiente');
 
 SELECT * FROM factura;
+
+-- 6
+DELIMITER $$
+
+DROP TRIGGER IF EXISTS tg_actualizar_estado_pedido $$
+
+CREATE TRIGGER tg_actualizar_estado_pedido
+AFTER INSERT ON factura
+FOR EACH ROW
+BEGIN
+
+    UPDATE pedido SET estado = 'Enviado' WHERE id = NEW.pedido_id;
+
+END $$
+
+DELIMITER ;
+
+SELECT * FROM pedido;
+
+INSERT INTO factura (total, fecha, pedido_id, cliente_id)
+VALUES(35000, '2025-06-10 12:05:00', 1, 1);
