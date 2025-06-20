@@ -111,3 +111,31 @@ END $$
 DELIMITER ;
 
 UPDATE producto_presentacion SET precio = 0 WHERE id = 1;
+
+-- 5
+DELIMITER $$
+
+DROP TRIGGER IF EXISTS tg_generar_factura $$
+
+CREATE TRIGGER tg_generar_factura
+AFTER INSERT ON pedido
+FOR EACH ROW
+BEGIN
+    DECLARE p_estado VARCHAR(150);
+
+    IF NEW.estado IN ('Cancelado', 'Enviado') THEN
+        SIGNAL SQLSTATE '40001'
+            SET MESSAGE_TEXT = 'El pedido debe de estar en pendiente';
+    END IF;
+
+    INSERT INTO factura(total, fecha, pedido_id, cliente_id)
+    VALUES(NEW.total, NOW(), NEW.id, NEW.cliente_id);
+
+END $$
+
+DELIMITER ;
+
+INSERT INTO pedido (fecha_recogida, total, cliente_id, metodo_pago_id, estado)
+VALUES('2025-03-11 06:00:00', 50000, 2, 1, 'Cancelado');
+
+SELECT * FROM factura;
