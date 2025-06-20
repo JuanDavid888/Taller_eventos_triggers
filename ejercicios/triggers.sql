@@ -1,4 +1,4 @@
--- Active: 1750359843386@@127.0.0.1@3307@pizzeria
+-- Active: 1750417399612@@127.0.0.1@3307@pizzeria
 
 SHOW TRIGGERS;
 
@@ -46,3 +46,25 @@ SELECT pro.id AS Producto, pro.tipo_producto_id AS Tipo_Producto
     FROM producto_presentacion pro_pre
     JOIN producto pro ON pro_pre.producto_id = pro.id
     WHERE pro_pre.id = 4;
+
+-- 2
+DELIMITER $$
+
+DROP TRIGGER IF EXISTS tg_descontar_stock_ingrediente_extra $$
+
+CREATE TRIGGER tg_descontar_stock_ingrediente_extra
+AFTER INSERT ON ingrediente_extra
+FOR EACH ROW
+BEGIN
+
+    UPDATE ingrediente SET stock = stock - NEW.cantidad
+    WHERE id = NEW.ingrediente_id;
+
+END $$
+
+DELIMITER ;
+
+INSERT INTO ingrediente_extra(cantidad, detalle_pedido_id, ingrediente_id)
+VALUES(10, 1, 1);
+
+SELECT * FROM ingrediente;
